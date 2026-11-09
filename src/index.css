@@ -1,0 +1,295 @@
+@import "tailwindcss";
+
+:root {
+  --tw: 0.72em;
+  --th: 1.45em;
+  --board: #0d0d0d;
+  --top: #1c1c1c;
+  --bot: #131313;
+  --glyph: #f2efe6;
+  --page: #191a1c;
+  --casing: #2a2b2f;
+  --casing-edge: #3a3c41;
+  --label: #b9bbc0;
+}
+
+.app-bg {
+  background: var(--page);
+}
+
+/* The clock is the focal object; the casing lifts it off the room and frames it. */
+.casing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.1rem, 4vw, 2.4rem) clamp(1.3rem, 5vw, 3.2rem);
+  background: var(--casing);
+  border: 1px solid var(--casing-edge);
+  border-radius: 1.1rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -14px 28px rgba(0, 0, 0, 0.28),
+    0 30px 70px -22px rgba(0, 0, 0, 0.8);
+}
+
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.4em;
+  font-size: clamp(1.5rem, 5vw, 4.5rem);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--glyph);
+}
+
+.unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.tiles {
+  display: flex;
+  gap: 0.06em;
+}
+
+.digit {
+  position: relative;
+  width: var(--tw);
+  height: var(--th);
+  perspective: 340px;
+  background: var(--board);
+  border-radius: 0.08em;
+}
+
+.half {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  backface-visibility: hidden;
+}
+.cliptop {
+  top: 0;
+  align-items: flex-start;
+  background: linear-gradient(var(--top), var(--board));
+  border-radius: 0.08em 0.08em 0 0;
+}
+.clipbottom {
+  top: 50%;
+  align-items: flex-end;
+  background: linear-gradient(var(--board), var(--bot));
+  border-radius: 0 0 0.08em 0.08em;
+}
+
+.g {
+  display: block;
+  height: var(--th);
+  line-height: var(--th);
+}
+
+.digit__flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  transform-style: preserve-3d;
+  transform-origin: 50% 100%;
+  z-index: 3;
+  animation: flap 150ms forwards;
+  will-change: transform;
+}
+.digit__flap .half {
+  top: 0;
+  height: 100%;
+}
+.digit__flap-back {
+  transform: rotateX(180deg);
+}
+
+@keyframes flap {
+  0% {
+    transform: rotateX(0deg);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.9, 0.5);
+  }
+  50% {
+    transform: rotateX(-90deg);
+    animation-timing-function: cubic-bezier(0.1, 0.6, 0.4, 1);
+  }
+  100% {
+    transform: rotateX(-180deg);
+  }
+}
+
+.digit::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: calc(50% - 0.5px);
+  width: 100%;
+  height: 1px;
+  z-index: 4;
+  background: rgba(0, 0, 0, 0.85);
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.06);
+}
+
+.label {
+  font-size: 0.3em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* ponytail: 1ms not none — animationend still fires so Digit commits state */
+  .digit__flap {
+    animation-duration: 1ms;
+  }
+}
+
+.sound-toggle {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.35rem 0.7rem;
+  font:
+    500 0.75rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c8c8c8;
+  background: transparent;
+  border: 1px solid #4a4c52;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.sound-toggle:hover {
+  color: #fff;
+  border-color: #7a7c82;
+}
+.sound-toggle:focus-visible {
+  outline: 2px solid #e8e8e8;
+  outline-offset: 2px;
+}
+
+/* Clock wheel: a radial arc of options, bottom-left. */
+.wheel {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 20;
+}
+
+.wheel-trigger {
+  padding: 0.45rem 0.9rem;
+  font:
+    500 0.78rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #dcdcdc;
+  background: var(--casing);
+  border: 1px solid var(--casing-edge);
+  border-radius: 0.6rem;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 20px -12px rgba(0, 0, 0, 0.8);
+}
+.wheel-trigger:hover {
+  color: #fff;
+  border-color: #4d4f55;
+}
+.wheel-trigger:focus-visible {
+  outline: 2px solid #e8e8e8;
+  outline-offset: 2px;
+}
+
+.wheel-panel {
+  position: absolute;
+  left: -8px;
+  bottom: calc(100% + 12px);
+  width: 192px;
+  height: 192px;
+  border-radius: 50%;
+  border: 1px solid var(--casing-edge);
+  background: rgba(28, 29, 32, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 30px 60px -24px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  transform: scale(0.92);
+  transform-origin: 12% 100%;
+  pointer-events: none;
+  transition:
+    opacity 0.16s ease,
+    transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.wheel[data-open="true"] .wheel-panel {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.wheel-panel::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #4a4c52;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.wheel-dial {
+  position: absolute;
+  inset: 0;
+}
+
+.wheel-item {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  min-width: 5.4rem;
+  padding: 0.4rem 0.65rem;
+  font:
+    500 0.72rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9a9ca1;
+  background: #232427;
+  border: 1px solid #34363b;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.18s ease,
+    color 0.18s,
+    background 0.18s,
+    border-color 0.18s;
+  will-change: transform;
+}
+.wheel-item[data-active="true"] {
+  color: var(--glyph);
+  background: #34363b;
+  border-color: #55585f;
+}
+.wheel-item:hover {
+  color: #e8e8e8;
+}
+.wheel-item:focus-visible {
+  outline: 2px solid #e8e8e8;
+  outline-offset: 2px;
+}
